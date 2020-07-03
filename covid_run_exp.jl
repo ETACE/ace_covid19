@@ -52,7 +52,7 @@ for idx in 1:(Int(floor(no_runs / nworkers())) + 1)
 			if (idx-1)*nworkers()+idxx <= no_runs
 				push!(worker_futures, @spawnat (idxx+1) launch_model("$(filename_prefix)", (idx-1)*nworkers()+idxx))
 				sleep(1)
-				lastactiveworker = (idxx+1)
+				lastactiveworker = (idxx)
 			end
 		end
 		fetch.(worker_futures)
