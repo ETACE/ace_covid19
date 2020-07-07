@@ -6,8 +6,8 @@ include("covid_model.jl")
 
 include("covid_snapshot_loader.jl")
 
-#include("covid_par_ini_snap.jl")
-include("covid_par_ini.jl")
+path_to_data = "" # for example: data//bailout//duration//12//
+include("$(path_to_data)covid_par_ini.jl")
 
 if loadsnapshot
     covidmodel, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption = restore_snapshot("$snapname")
@@ -388,12 +388,12 @@ end
 totcas = totcas / nhh
 
 if snapshot
-    open("snapshot100kr1","w") do snapshot_file
+    open("$(path_to_data)snapshot","w") do snapshot_file
         serialize(snapshot_file, (covidmodel.agents, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption))
     end
 end
 
-open("simdata.dat", "w") do outfile
+open("$(path_to_data)simdata.dat", "w") do outfile
     serialize(outfile, (datahhy, datahho, dataf, castraj, unempltraj, pubacctraj,constraj,unempsectraj,tautraj,conspercaptraj,R0counttraj,gdppercaptraj,R0count,f_av_savings,f_var_savings,f_av_workers,f_var_workers,f_av_stock,f_av_demandexp,f_var_demandexp,totinftraj,contact_count_traj,contact_work_traj,contact_social_traj, contact_shop_traj,inactivefirmstraj,bailouttraj,shorttimetraj,shorttimesectraj,totalaccountstraj,curinftrajy,curinftrajo,curinfregtrajy,curinfregtrajo,totfirmtraj,gdplosstraj,bankrupttraj))
 end
 

@@ -29,7 +29,7 @@ In order to install a package, start *julia* and execute the following command:
 using Pkg; Pkg.add("ProgressMeter")
 ```
 
-A typical installation on desktop computer takes about 15 minutes. The code has been tested on Microsoft Windows 10 and Ubuntu Server 16.04 LTS.
+A typical installation on desktop computer takes about 15 minutes. The code has been tested on Microsoft Windows 10, Ubuntu Server 16.04 LTS and macOS Catalina 10.15.5.
 
 ### Running The Model
 
@@ -66,9 +66,9 @@ We use the following files located in the root folder to encode different polici
 * *policy_bailout.jl* - lockdown policy including bailout schemes.
 * *policy_alpha.jl* - Lockdown policy with more or less severe restrictions on economic activity (alpha parameter).
 * *policy_bailout_alpha.jl* - Lockdown policy with more or less severe restrictions on economic activity (alpha parameter) and bailout schemes.
-* *policy_good_xi0.5.jl* - Policy after lockdown with partial economic restrictions and higher infection proibability.
-* *policy_only_xi* - Lockdown policyimplementing individual preventive measures only.
-* *policy_only_xi_ho* - Lockdown policyimplementing individual preventive measures ans working at home only
+* *policy_good_xi0.5.jl* - Policy after lockdown with partial economic restrictions and higher infection probability.
+* *policy_only_xi* - Lockdown policy implementing individual preventive measures only.
+* *policy_only_xi_ho* - Lockdown policy implementing individual preventive measures ans working at home only
 * *policy_allout.jl* - Policy after vaccine becomes available (terminates all measures).
 
 ### Data Creation
