@@ -3,8 +3,8 @@
 Version: July 2020
 
 This is the source code of the ace_covid19 model. The economic part is partly based on the
-[EURACE@Unibi](http://www.wiwi.uni-bielefeld.de/lehrbereiche/vwl/etace/Eurace_Unibi/), a large-scale agent-based macroeconomic model.
-In light of the COVID-19 pandemic, we implement social interactions among agents to model the spread of the COVID-19 disease. This allows us to analyze the effect of the different lockdown policies and reopening strategies on economic variables like GDP, public expenditures, bankruptcies or unemployment rates, as well as epidemological effects (number of infected individuals, casulties) in an integrated model.
+[EURACE@Unibi](http://www.wiwi.uni-bielefeld.de/lehrbereiche/vwl/etace/Eurace_Unibi/) model, a large-scale agent-based macroeconomic model.
+In light of the COVID-19 pandemic, we implement social interactions among agents to model the spread of the COVID-19 disease. This allows us to analyze the effect of the different lockdown policies and reopening strategies on economic variables like GDP, public expenditures, bankruptcies or unemployment rates, as well as epidemiological effects (number of infected individuals, casualties) in an integrated model.
 
 
 ## Getting Started
@@ -13,7 +13,7 @@ These instructions will allow you to run the model on your system.
 
 ### System Requirements and Installation
 
-To run the code you need to install **[Julia](https://julialang.org/)** (v1.4.1). Additionnally, the following packages need to be installed:
+To run the code you need to install **[Julia](https://julialang.org/)** (v1.4.1). Additionally, the following packages need to be installed:
 
 * [Agents](https://juliadynamics.github.io/Agents.jl/stable/) - Version 3.2.1
 * [Plots](http://docs.juliaplots.org/) - Version 1.5.2
@@ -33,7 +33,7 @@ A typical installation on desktop computer takes about 15 minutes. The code has 
 
 ### Running The Model
 
-The model is implemented in *covid_model.jl*. In *covid_par_ini.jl*, the inital values and parameters are set. The simulation can be started from a snapshot. This needs to be specified in the *covid_par_ini.jl*-file. A snapshot with 100.000 household agents can be found in the root folder (*snapshot100kr1.dat*).
+The model is implemented in *covid_model.jl*. In *covid_par_ini.jl*, the initial values and parameters are set. The simulation can be started from a snapshot. This needs to be specified in the *covid_par_ini.jl*-file. A snapshot with 100.000 household agents can be found in the root folder (*snapshot100kr1.dat*).
 
 The user can specify a set of policies that will be activated at certain point in time during the simulation. The policies have to be implemented in specific policy-files and added to *covid_par_ini.jl*. 
 
@@ -68,12 +68,12 @@ We use the following files located in the root folder to encode different polici
 * *policy_bailout_alpha.jl* - Lockdown policy with more or less severe restrictions on economic activity (alpha parameter) and bailout schemes.
 * *policy_good_xi0.5.jl* - Policy after lockdown with partial economic restrictions and higher infection probability.
 * *policy_only_xi* - Lockdown policy implementing individual preventive measures only.
-* *policy_only_xi_ho* - Lockdown policy implementing individual preventive measures ans working at home only
+* *policy_only_xi_ho* - Lockdown policy implementing individual preventive measures and working at home only
 * *policy_allout.jl* - Policy after vaccine becomes available (terminates all measures).
 
 ### Data Creation
 
-To reproduce the results from the paper by re-simulate the model use the folder structure and *covid_par_ini.jl* files in the *data* folder.
+To reproduce the results from the paper by re-simulating the model use the folder structure and *covid_par_ini.jl* files in the *data* folder.
 The *covid_par_ini.jl* file for e.g. the baseline (threshold=5, alpha=1.0, xi=0.6) is located in the *data/main/xi06/beta5/alpha1* folder. In order to create a batch of 20 runs, execute
 
 ```
@@ -96,13 +96,13 @@ The file to perform the statistical tests is located in the *stat_tests* folder.
 ```
 julia stat_test_and_data.jl
 ```
-to create a text file called *stat_tests*, which contains the results of all statistical tests.
+to create a text file called *stat_tests_results.txt*, which contains the results of all statistical tests.
 
 ### Empirical Data
 
 We make use of empirical data from the [Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19) for the number of infected and the number of casualties.
 The number of infected and the number of casualties has been adjusted by the detection rate and has been scaled to a population of 100.000.
-R0 is calculated from this data following [Robert Koch Institut's methodology](https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Archiv_Juli.html) which is availabe in all the daily reports.
+R0 is calculated from this data following [Robert Koch Institut's methodology](https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Archiv_Juli.html) which is available in all the daily reports.
 The adjusted data is stored in *data/baseline_GER/emp_traj_100.jl*.
 
 
