@@ -1,5 +1,5 @@
 # datahhy, datahho, dataf, castraj, unempltraj, pubacctraj, constraj,unempsectraj,tautraj = deserialize(open("100K_1704\\simdata.dat")) # read data from file
-filename_prefix = ""
+filename_prefix = "figures\\"
 
 datapoint = fld(T,datat)
 #virus related output
@@ -95,10 +95,7 @@ datapoint = fld(T,datat)
             global RKIR0traj[t] = (totinftraj[t]-totinftraj[t-4]) / (totinftraj[t-4]-totinftraj[t-8])
         end
     end
-    include("emp_traj.jl")
-    emptotinftraj = vcat(zeros(tpol-10),emptotinf)
     pl1b = plot(collect(0:datat*datapoint), totinftraj[:])
-    plot!(emptotinftraj, linecolor = [:black])
     savefig(pl1b, "$(filename_prefix)totinf.pdf")
 
     pl1c = plot(collect(0:datat*datapoint), RKIR0traj[:])
