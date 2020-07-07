@@ -3,7 +3,7 @@ filename_prefix = "exp//baseline//"
 include("$(filename_prefix)covid_par_ini.jl")
 worker_results = deserialize(open("$(filename_prefix)batchdata.dat"))
 
-datapoint = fld(T,data
+datapoint = fld(T,data)
 
 gdpmean = mean(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2)
 gdpstd = std(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2)
