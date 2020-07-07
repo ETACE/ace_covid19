@@ -38,7 +38,7 @@ tpolout = tpol + 21
 
 policies = Dict{Int64,String}()
 policies[tpol] = "policy_alpha.jl"
-policies[tpol + 21] = "policy_baseline_end_xi0.5"
+policies[tpol + 21] = "policy_baseline_end_xi0.5.jl"
 policies[vacctime] = "policy_allout.jl"
 
 detfrac = 0.15 # detection frequency
@@ -47,7 +47,7 @@ poladjfrac = 0.6 # factor by which gap in policy parameter is closeed during pha
 
 tadaptivepolicystart = tpol + 21 # Enable adaptive policy response
 tadaptivepolicyend = vacctime - 7 # Enable adaptive policy response
-adaptivepolicygood = "policy_baseline_end_xi0.5" # policy acitvated if number of infected above threshold
+adaptivepolicygood = "policy_baseline_end_xi0.5.jl" # policy acitvated if number of infected above threshold
 adaptivepolicybad = "policy_alpha.jl" #  policy activated if number of infected below threshold
 
 fracy = .75 # fraction of young households
