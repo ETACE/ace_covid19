@@ -41,7 +41,7 @@ poladjfrac = 0.6 # factor by which gap in policy parameter is closeed during pha
 
 tadaptivepolicystart = virustime + 7 # Enable adaptive policy response
 tadaptivepolicyend = vacctime - 7 # Enable adaptive policy response
-adaptivepolicygood = "policy2_baseline_end.jl" # policy acitvated if number of infected above threshold
+adaptivepolicygood = "policy_baseline_end.jl" # policy acitvated if number of infected above threshold
 adaptivepolicybad = "policy_baseline.jl" #  policy activated if number of infected below threshold
 
 fracy = .75 # fraction of young households

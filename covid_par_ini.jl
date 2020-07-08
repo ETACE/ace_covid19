@@ -34,8 +34,8 @@ end
 #policy data
 tpol = virustime + 21
 policies = Dict{Int64,String}()
-policies[tpol] = "policy2.jl"
-policies[tpol + 21] = "policy2_end1.jl"
+policies[tpol] = "policy_baseline.jl"
+policies[tpol + 21] = "policy_baseline_end.jl"
 policies[vacctime] = "policy_allout.jl"
 
 detfrac = 0.15 # detection frequency
@@ -44,8 +44,8 @@ poladjfrac = 0.6 # factor by which gap in policy parameter is closeed during pha
 
 tadaptivepolicystart = tpol + 21 # Enable adaptive policy response
 tadaptivepolicyend = vacctime - 7 # Enable adaptive policy response
-adaptivepolicygood = "policy2_end1.jl" # policy acitvated if number of infected above threshold
-adaptivepolicybad = "policy2.jl" #  policy activated if number of infected below threshold
+adaptivepolicygood = "policy_baseline_end.jl" # policy acitvated if number of infected above threshold
+adaptivepolicybad = "policy_baseline.jl" #  policy activated if number of infected below threshold
 
 fracy = .75 # fraction of young households
 avempl = 15 # average number of employees per firm
@@ -194,4 +194,3 @@ shopmeett = shopmeet
 socialmaxyo_o = socialmaxyo
 socialmaxyoh = socialmaxyo
 socialmaxyot = socialmaxyo
-
