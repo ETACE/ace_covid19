@@ -1,9 +1,11 @@
 using Statistics,Serialization,StatsPlots
-filename_prefix = "exp//baseline//"
-include("$(filename_prefix)covid_par_ini.jl")
-worker_results = deserialize(open("$(filename_prefix)batchdata.dat"))
+path_to_data = "data//baseline_GER//"
+filename_prefix = "figures//"
 
-datapoint = fld(T,data)
+include("$(path_to_data)covid_par_ini.jl")
+worker_results = deserialize(open("$(path_to_data)batchdata.dat"))
+
+datapoint = fld(T,datat)
 
 gdpmean = mean(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2)
 gdpstd = std(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2)
@@ -32,10 +34,9 @@ savefig(pl3,"$(filename_prefix)RKIR0dyn.pdf")
 
 totinfmean = mean(hcat((results -> results[:totinftraj]).(worker_results)...), dims=2)
 totinfstd = std(hcat((results -> results[:totinftraj]).(worker_results)...), dims=2)
-include("emp_traj.jl")
-fac = nhh/100000
+include("$(path_to_data)emp_traj_100k.jl")
 nzer= (Int(ceil(virustime/datat))-1)*datat+2*corlatent
-emptotinftraj = vcat(zeros(nzer),fac*emptotinf)
+emptotinftraj = vcat(zeros(nzer),emptotinf)
 nne = size(emptotinf)[1]
 pl5 = plot(collect(1:nn1),[totinfmean, totinfmean.-totinfstd,totinfmean.+totinfstd], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black],label = ["totinf" "" ""])
 plot!(emptotinftraj, linecolor = [:green], label="GER", linewidth = [2])
