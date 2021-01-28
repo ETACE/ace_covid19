@@ -31,6 +31,7 @@ castraj = zeros(datapoint+1,k1,k2,2)
 unempltraj = zeros(datapoint+1)
 shorttimetraj = zeros(datapoint+1)
 unempsectraj = zeros(datapoint+1,nsec)
+emplwopubtraj = zeros(datapoint+1,nsec) # Employment without public sector
 shorttimesectraj = zeros(datapoint+1,nsec)
 pubacctraj = zeros(datapoint+1)
 tautraj = zeros(datapoint+1)
@@ -273,8 +274,11 @@ badpoltime = 0
 
     for tt = 1:nsec
         shorttimetraj[t+1] += shorttimecount[tt]
+        emplwopubtraj[t+1] += (1-unempsectraj[t+1,tt])*size(hh[1])[1] * fracemp[tt]
         shorttimesectraj[t+1,tt] = shorttimecount[tt] / (size(hh[1])[1] * fracemp[tt])
     end
+
+    shorttimetraj[t+1] = shorttimetraj[t+1] / emplwopubtraj[t+1]
 
     pubacctraj[t+1] = pubacc / size(union(hh[1],hh[2]))[1]
     tautraj[t+1] = tau

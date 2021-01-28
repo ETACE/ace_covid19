@@ -20,6 +20,7 @@ totcastraj = zeros(datapoint+1,3)
 unempltraj = zeros(datapoint+1)
 shorttimetraj = zeros(datapoint+1)
 unempsectraj = zeros(datapoint+1,nsec)
+emplwopubtraj = zeros(datapoint+1,nsec) # Employment without public sector
 shorttimesectraj = zeros(datapoint+1,nsec)
 pubacctraj = zeros(datapoint+1)
 tautraj = zeros(datapoint+1)
@@ -89,7 +90,7 @@ ttt=0
 
 currentadaptivepolicy = "NONE"
 polswitchcount = 0
-global badpoltime = 0
+badpoltime = 0
 
 #iteration
 #@showprogress
@@ -237,8 +238,11 @@ for t = 1:datapoint
 
     for tt = 1:nsec
         shorttimetraj[t+1] += shorttimecount[tt]
+        emplwopubtraj[t+1] += (1-unempsectraj[t+1,tt])*size(hh[1])[1] * fracemp[tt]
         shorttimesectraj[t+1,tt] = shorttimecount[tt] / (size(hh[1])[1] * fracemp[tt])
     end
+
+    shorttimetraj[t+1] = shorttimetraj[t+1] / emplwopubtraj[t+1]
 
     pubacctraj[t+1] = pubacc / size(union(hh[1],hh[2]))[1]
     tautraj[t+1] = tau
@@ -366,4 +370,3 @@ for t= 1:datat*datapoint+1
         global RKIR0smtraj[t] = mean(RKIR0traj[t-6:t])
     end
 end
-shorttimetraj = shorttimetraj / nhhy

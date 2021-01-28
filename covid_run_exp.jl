@@ -73,7 +73,7 @@ for idx in 1:(Int(floor(no_runs / nworkers())) + 1)
 						:totcas=>totcas,:togdploss=>totgdploss,:totfirmtraj=>totfirmtraj,:gdplosstraj=>gdplosstraj,
 						:bankrupttraj=>bankrupttraj,:contact_work_traj=>contact_work_traj,:contact_count_traj=>contact_count_traj,
 						:contact_social_traj=>contact_social_traj,:contact_shop_traj=>contact_shop_traj,:RKIR0smtraj=>RKIR0smtraj,
-						:polswitchcount=>polswitchcount,:badpoltime=>badpoltime))())
+						:polswitchcount=>polswitchcount,:badpoltime=>badpoltime,:shorttimetraj=>shorttimetraj))())
 		end
 		worker_results = fetch.(result_futures)
 		global all_results = vcat(all_results, worker_results)
