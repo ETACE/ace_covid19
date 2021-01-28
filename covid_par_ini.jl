@@ -16,9 +16,9 @@ k1 = 1 # dimension1 of space
 k2 = 1 # dimension2 of space
 nhh = 100000 # number of hh
 
-T = 582  # time periods
+T = 744  # time periods
 virustime =14 # time where infection starts
-vacctime = virustime + 365
+vacctime = virustime + 547
 enablebankruptciestime = 1000 #1000
 endfcadj = 1250
 resetfirmsavingstime = 500
@@ -32,20 +32,22 @@ else
 end
 
 #policy data
+alpha_lockdown = 1.0
+alpha_open = 0.0
 tpol = virustime + 21
 policies = Dict{Int64,String}()
-policies[tpol] = "policy_baseline.jl"
-policies[tpol + 21] = "policy_baseline_end.jl"
+policies[tpol] = "policy_lockdown_bailout.jl"
 policies[vacctime] = "policy_allout.jl"
 
 detfrac = 0.15 # detection frequency
-adaptivepolicythreshold = 5 * nhh / (detfrac*100000) # Threshold infected/week
+adaptivepolicythresholdoff = 5 * nhh / (detfrac*100000) # Threshold infected/week
+adaptivepolicythresholdon = 50 * nhh / (detfrac*100000) # Threshold infected/week
 poladjfrac = 0.6 # factor by which gap in policy parameter is closeed during phase in / phase out every week
 
 tadaptivepolicystart = tpol + 21 # Enable adaptive policy response
 tadaptivepolicyend = vacctime - 7 # Enable adaptive policy response
-adaptivepolicygood = "policy_baseline_end.jl" # policy acitvated if number of infected above threshold
-adaptivepolicybad = "policy_baseline.jl" #  policy activated if number of infected below threshold
+adaptivepolicygood = "policy_open.jl" # policy acitvated if number of infected above threshold
+adaptivepolicybad = "policy_lockdown_bailout.jl" #  policy activated if number of infected below threshold
 
 fracy = .75 # fraction of young households
 avempl = 15 # average number of employees per firm
@@ -74,7 +76,6 @@ pinf = 0.0725 # infection prob at meeting
 trec = 21 # recovery time
 corlatent = 5 # latency time
 corinf = 5 # infectious period
-detfrac = 0.15 # detection frequency
 hcap = Int(round(0.0003*(nhh))) # no of intensive beds based on 30 per 100.000
 mortl = detfrac*[0.0066/trec, 0.16/trec] # mortality young, old, normal cap, data from Germany
 morth = detfrac*[0.018/trec, 0.5/trec] # mortality young, old, overcap, data from Italy
@@ -87,8 +88,11 @@ etmax = [0.25, 0.25, 0.25, 0] #profit markups after fixed costs are introduced
 #et = 0.15
 #inventory buffer for firms  # man / ser / food
 
-buff = .25*[0.1 / 7., 0.03 / 7, 0.05 / 7, 0]
+buff = .25*[0.1 / 7., 0.03 / 7, 0.05 / 7, 0] # changes
+#buff = .005*[0.1 / 7., 0.05 / 7, 0.05 / 7, 0]
 
+
+#buff = [0.2 / 7., 0.05 / 7, 0.1 / 7, 0]
 
 # weekly depreciation of inventory
 de = [0.01, 1, 0.5, 0] # man / service / food
@@ -97,7 +101,9 @@ zerostockboost = 8 # factor to boost expansion if stock is zero
 divrate = 0.7 # dividend rate if savings are not too high
 savtar = [1,.5,.5,0] # target of firm savings relative to av. revenues during last 4 weeks
 
-fcvcratio = 0.16*[0.47, 0.3, 0.3, 0.3] #fixed cost to variable cost ratio
+
+#fcvcratio = 0.1*[0.47, 0.3, 0.3, 0.3] #fixed cost to variable cost ratio
+fcvcratio = 0.16*[0.47, 0.3, 0.3, 0.3]
 
 #productivity distribution
 #prodlb = [.9, 1. / 1.1, .9, 1.]    # man / ser / food
@@ -155,10 +161,10 @@ pastrevini = 10000*[1,1,1,1] # intitializations of past revenue
 virus = false # initially there is no virus
 genhomeoffice = false # initially no home-office
 bailoutprogram = false # initially no bailouts
-end_bailout_after_weeks = 56
+end_bailout_after_weeks = 52
 shorttimeprogram = false # initially no short term program
-shorttimeperiod = 26
-shorttimeprob = 1
+shorttimeperiod = 52
+shorttimeprob = 0.75
 demandexpini = [1700,1000,600,0]
 
 # list for total consumption i regions
