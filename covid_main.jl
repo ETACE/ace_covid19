@@ -9,6 +9,12 @@ include("covid_snapshot_loader.jl")
 path_to_data = "" # for example: data//bailout//duration//12//
 include("$(path_to_data)covid_par_ini.jl")
 
+# Check if covid_par_ini defines symmetric threshold (legacy code)
+if @isdefined(adaptivepolicythreshold) && !@isdefined(adaptivepolicythresholdon) && !@isdefined(adaptivepolicythresholdoff)
+    adaptivepolicythresholdon = adaptivepolicythreshold
+    adaptivepolicythresholdoff = adaptivepolicythreshold
+end
+
 if loadsnapshot
     covidmodel, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption = restore_snapshot("$snapname")
 else
@@ -225,12 +231,12 @@ badpoltime = 0
 
     # Adaptive policy
     global currentadaptivepolicy
-    if (t+1)*datat > tadaptivepolicystart && (t+1)*datat < tadaptivepolicyend
-        if newinf >= adaptivepolicythreshold && (currentadaptivepolicy == "GOOD" || currentadaptivepolicy == "NONE")
+    if t*datat >= tadaptivepolicystart && (t+1)*datat < tadaptivepolicyend
+        if newinf >= adaptivepolicythresholdon && (currentadaptivepolicy == "GOOD" || currentadaptivepolicy == "NONE")
             include("$adaptivepolicybad")
             currentadaptivepolicy = "BAD"
             global polswitchcount += 1
-        elseif newinf < adaptivepolicythreshold && currentadaptivepolicy == "BAD"
+        elseif newinf < adaptivepolicythresholdoff && currentadaptivepolicy == "BAD"
             include("$adaptivepolicygood")
             currentadaptivepolicy = "GOOD"
         end

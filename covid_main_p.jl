@@ -1,5 +1,11 @@
 # agent-based economy under covid infection
 
+# Check if covid_par_ini defines symmetric threshold (legacy code)
+if @isdefined(adaptivepolicythreshold) && !@isdefined(adaptivepolicythresholdon) && !@isdefined(adaptivepolicythresholdoff)
+    adaptivepolicythresholdon = adaptivepolicythreshold
+    adaptivepolicythresholdoff = adaptivepolicythreshold
+end
+
 if loadsnapshot
     covidmodel, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption = restore_snapshot("$snapname")
 else
@@ -190,11 +196,11 @@ for t = 1:datapoint
     # Adaptive policy
     global currentadaptivepolicy
     if t*datat >= tadaptivepolicystart && (t+1)*datat < tadaptivepolicyend
-        if newinf >= adaptivepolicythreshold && (currentadaptivepolicy == "GOOD" || currentadaptivepolicy == "NONE")
+        if newinf >= adaptivepolicythresholdon && (currentadaptivepolicy == "GOOD" || currentadaptivepolicy == "NONE")
             include("$adaptivepolicybad")
             currentadaptivepolicy = "BAD"
             global polswitchcount += 1
-        elseif newinf < adaptivepolicythreshold && currentadaptivepolicy == "BAD"
+        elseif newinf < adaptivepolicythresholdoff && currentadaptivepolicy == "BAD"
             include("$adaptivepolicygood")
             currentadaptivepolicy = "GOOD"
         end
