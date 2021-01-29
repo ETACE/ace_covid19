@@ -3,10 +3,10 @@ using Statistics,Serialization,StatsPlots, DataFrames
 
 
 # parameter values
-filename_prefix = "..//data//main//xi06//"
+filename_prefix = "..//..//data//working_paper//main//xi05//"
 paras = ["beta5//alpha1","beta5//alpha25","beta30/alpha1"]
 
-plotname_prefix = "..//figures//main_xi06_" # store the plots here
+plotname_prefix = "..//..//figures//main_xi05_" # store the plots here
 
 badpol = true # do you have data for badpol and switches?
 show_capacity = false # for Infected plot

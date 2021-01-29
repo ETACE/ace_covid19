@@ -2,8 +2,8 @@ using Statistics,Serialization,StatsPlots, DataFrames, LaTeXStrings
 
 
 
-filename_prefix = "..//data//bailout//xi06//"
-plotname_prefix = "..//figures//bailout_xi06_comparison_" # store the plots here
+filename_prefix = "..//..//data//working_paper//bailout//xi06//"
+plotname_prefix = "..//..//figures//bailout_xi06_comparison_" # store the plots here
 
 
 show_capacity = false # for infected plot

@@ -1,7 +1,7 @@
 using Statistics,Serialization,StatsPlots, DataFrames, HypothesisTests
 
 
-filename_prefix = "..//data//main//xi06//"
+filename_prefix = "..//..//data//working_paper//main//xi06//"
 
 
 # set intial values as in coivd par ini

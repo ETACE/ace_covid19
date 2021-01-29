@@ -2,8 +2,8 @@ using Statistics,Serialization,StatsPlots, DataFrames, LaTeXStrings
 
 
 
-filename_prefix = "..//data//main//xi05//"
-plotname_prefix = "..//figures//main_xi05_comparison_" # store the plots here
+filename_prefix = "..//..//data//working_paper//main//xi06//"
+plotname_prefix = "..//..//figures//main_xi06_comparison_" # store the plots here
 
 
 show_capacity = false # for infected plot
@@ -59,20 +59,20 @@ end
 ll = length(paras)
 gdploss_means = reverse(gdploss_means)
 totcas_means = reverse(totcas_means)
-suppfig3b = quiver(gdploss_means[1:ll-1],totcas_means[1:ll-1],quiver=(gdploss_means[2:ll]-gdploss_means[1:ll-1],totcas_means[2:ll]-totcas_means[1:ll-1]), color = [:red], linewidth = 2, xlabel = "Average GDP loss [%]", ylabel = "Mortality [%]")
-scatter!(suppfig3b, gdploss_means, totcas_means, markersize = 5, markercolor = [:red], legend=false)
+suppfig3a = quiver(gdploss_means[1:ll-1],totcas_means[1:ll-1],quiver=(gdploss_means[2:ll]-gdploss_means[1:ll-1],totcas_means[2:ll]-totcas_means[1:ll-1]), color = [:red], linewidth = 2, xlabel = "Average GDP loss [%]", ylabel = "Mortality [%]")
+scatter!(suppfig3a, gdploss_means, totcas_means, markersize = 5, markercolor = [:red], legend=false)
 
 
-fig2b = quiver(gdploss_means[1:ll-1],totcas_means[1:ll-1],quiver=(gdploss_means[2:ll]-gdploss_means[1:ll-1],totcas_means[2:ll]-totcas_means[1:ll-1]), color = [:red], linewidth = 2, xlabel = "Average GDP loss [%]", ylabel = "Mortality [%]")
-scatter!(fig2b, gdploss_means, totcas_means, markersize = 5, markercolor = [:red], legend=false)
+fig2a = quiver(gdploss_means[1:ll-1],totcas_means[1:ll-1],quiver=(gdploss_means[2:ll]-gdploss_means[1:ll-1],totcas_means[2:ll]-totcas_means[1:ll-1]), color = [:red], linewidth = 2, xlabel = "Average GDP loss [%]", ylabel = "Mortality [%]")
+scatter!(fig2a, gdploss_means, totcas_means, markersize = 5, markercolor = [:red], legend=false)
 
 
 # set boundaries
-ylims!(suppfig3b,0.008,0.07)
-xlims!(suppfig3b,0,10)
+ylims!(suppfig3a,0.008,0.07)
+xlims!(suppfig3a,0,10)
 
-ylims!(fig2b,0.008,0.055)
-xlims!(fig2b,0,10)
+ylims!(fig2a,0.008,0.055)
+xlims!(fig2a,0,10)
 
 ### black LINES
 paras = ["beta10//alpha25","beta10//alpha50","beta10//alpha75","beta10//alpha1"]
@@ -96,8 +96,8 @@ end
 ll = length(paras)
 gdploss_means2 = reverse(gdploss_means2)
 totcas_means2 = reverse(totcas_means2)
-quiver!(suppfig3b, gdploss_means2[1:ll-1],totcas_means2[1:ll-1],quiver=(gdploss_means2[2:ll]-gdploss_means2[1:ll-1],totcas_means2[2:ll]-totcas_means2[1:ll-1]), color = [:black], linewidth = 2)
-scatter!(suppfig3b, gdploss_means2, totcas_means2, markersize = 5, markercolor = [:black], legend=false)
+quiver!(suppfig3a, gdploss_means2[1:ll-1],totcas_means2[1:ll-1],quiver=(gdploss_means2[2:ll]-gdploss_means2[1:ll-1],totcas_means2[2:ll]-totcas_means2[1:ll-1]), color = [:black], linewidth = 2)
+scatter!(suppfig3a, gdploss_means2, totcas_means2, markersize = 5, markercolor = [:black], legend=false)
 
 
 ### Green LINES
@@ -126,8 +126,8 @@ end
 ll = length(paras)
 gdploss_means3 = reverse(gdploss_means3)
 totcas_means3 = reverse(totcas_means3)
-quiver!(suppfig3b, gdploss_means3[1:ll-1],totcas_means3[1:ll-1],quiver=(gdploss_means3[2:ll]-gdploss_means3[1:ll-1],totcas_means3[2:ll]-totcas_means3[1:ll-1]), color = [:green], linewidth = 2)
-scatter!(suppfig3b, gdploss_means3, totcas_means3, markersize = 5, markercolor = [:green], legend=false)
+quiver!(suppfig3a, gdploss_means3[1:ll-1],totcas_means3[1:ll-1],quiver=(gdploss_means3[2:ll]-gdploss_means3[1:ll-1],totcas_means3[2:ll]-totcas_means3[1:ll-1]), color = [:green], linewidth = 2)
+scatter!(suppfig3a, gdploss_means3, totcas_means3, markersize = 5, markercolor = [:green], legend=false)
 
 
 ### blue LINES
@@ -154,46 +154,46 @@ for (i,p) in enumerate(paras)
 end
 
 ll = length(paras)
-quiver!(suppfig3b, gdploss_means4[1:ll-1],totcas_means4[1:ll-1],quiver=(gdploss_means4[2:ll]-gdploss_means4[1:ll-1],totcas_means4[2:ll]-totcas_means4[1:ll-1]), color = [:blue], linewidth = 2)
-scatter!(suppfig3b, gdploss_means4, totcas_means4, markersize = 5, markercolor = [:blue], legend=false)
+quiver!(suppfig3a, gdploss_means4[1:ll-1],totcas_means4[1:ll-1],quiver=(gdploss_means4[2:ll]-gdploss_means4[1:ll-1],totcas_means4[2:ll]-totcas_means4[1:ll-1]), color = [:blue], linewidth = 2)
+scatter!(suppfig3a, gdploss_means4, totcas_means4, markersize = 5, markercolor = [:blue], legend=false)
 
-quiver!(fig2b, gdploss_means4[1:ll-1],totcas_means4[1:ll-1],quiver=(gdploss_means4[2:ll]-gdploss_means4[1:ll-1],totcas_means4[2:ll]-totcas_means4[1:ll-1]), color = [:blue], linewidth = 2)
-scatter!(fig2b, gdploss_means4, totcas_means4, markersize = 5, markercolor = [:blue], legend=false)
+quiver!(fig2a, gdploss_means4[1:ll-1],totcas_means4[1:ll-1],quiver=(gdploss_means4[2:ll]-gdploss_means4[1:ll-1],totcas_means4[2:ll]-totcas_means4[1:ll-1]), color = [:blue], linewidth = 2)
+scatter!(fig2a, gdploss_means4, totcas_means4, markersize = 5, markercolor = [:blue], legend=false)
 
 
 
 #### add specific points A B C
-scatter!(suppfig3b, [point_A_x], [point_A_y], markersize = 6, markercolor = [:black])
-annotate!(suppfig3b,[point_A_x+0.4], [point_A_y+0.0005], text.([L"A_2"]) , fontsize=60 )
+scatter!(suppfig3a, [point_A_x], [point_A_y], markersize = 6, markercolor = [:black])
+annotate!(suppfig3a,[point_A_x+0.4], [point_A_y+0.0005], text.([L"A_1"]) , fontsize=60 )
 
-scatter!(suppfig3b, [point_B_x], [point_B_y], markersize = 6, markercolor = [:black])
-annotate!(suppfig3b,[point_B_x], [point_B_y-0.003], text.([L"B_2"]) , fontsize=160 )
+scatter!(suppfig3a, [point_B_x], [point_B_y], markersize = 6, markercolor = [:black])
+annotate!(suppfig3a,[point_B_x], [point_B_y-0.003], text.([L"B_1"]) , fontsize=160 )
 
-scatter!(suppfig3b, [point_C_x], [point_C_y], markersize = 6, markercolor = [:black])
-annotate!(suppfig3b,[point_C_x+0.4], [point_C_y], text.([L"C_2"]) , fontsize=160 )
+scatter!(suppfig3a, [point_C_x], [point_C_y], markersize = 6, markercolor = [:black])
+annotate!(suppfig3a,[point_C_x+0.4], [point_C_y], text.([L"C_1"]) , fontsize=160 )
 
-scatter!(suppfig3b, [point_D_x], [point_D_y], markersize = 6, markercolor = [:black])
-annotate!(suppfig3b,[point_D_x], [point_D_y-0.003], text.([L"D_2"]) , fontsize=160 )
+scatter!(suppfig3a, [point_D_x], [point_D_y], markersize = 6, markercolor = [:black])
+annotate!(suppfig3a,[point_D_x], [point_D_y-0.003], text.([L"D_1"]) , fontsize=160 )
 
 
 
-plot!(suppfig3b, size=(600,400))
-savefig(suppfig3b,"$(plotname_prefix)supp_fig_3b.pdf")
+plot!(suppfig3a, size=(600,400))
+savefig(suppfig3a,"$(plotname_prefix)supp_fig_3a.pdf")
 
 
 
 ### add specific points A B C
-scatter!(fig2b, [point_A_x], [point_A_y], markersize = 6, markercolor = [:black])
-annotate!(fig2b,[point_A_x+0.4], [point_A_y+0.0005], text.([L"A_2"]) , fontsize=60 )
+scatter!(fig2a, [point_A_x], [point_A_y], markersize = 6, markercolor = [:black])
+annotate!(fig2a,[point_A_x+0.4], [point_A_y+0.0005], text.([L"A_1"]) , fontsize=60 )
 # scatter!(plarrows, [point_A_x-0.3], [point_A_y], markersize = 0, markercolor = [:white], series_annotations = text.([L"\textrm{\sffamily A_1}"], :top))
 
-scatter!(fig2b, [point_B_x], [point_B_y], markersize = 6, markercolor = [:black])
-annotate!(fig2b,[point_B_x+0.4], [point_B_y+0.0005], text.([L"B_2"]) , fontsize=160 )
+scatter!(fig2a, [point_B_x], [point_B_y], markersize = 6, markercolor = [:black])
+annotate!(fig2a,[point_B_x+0.4], [point_B_y+0.0005], text.([L"B_1"]) , fontsize=160 )
 #scatter!(plarrows, [point_B_x], [point_B_y-0.003], markersize = 0, markercolor = [:white], series_annotations = text.([L"B_1"], :top))
 
-scatter!(fig2b, [point_C_x], [point_C_y], markersize = 6, markercolor = [:black])
-annotate!(fig2b,[point_C_x+0.4], [point_C_y], text.([L"C_2"]) , fontsize=160 )
+scatter!(fig2a, [point_C_x], [point_C_y], markersize = 6, markercolor = [:black])
+annotate!(fig2a,[point_C_x+0.4], [point_C_y], text.([L"C_1"]) , fontsize=160 )
 
 
-plot!(fig2b, size=(600,400))
-savefig(fig2b,"$(plotname_prefix)fig_2b.pdf")
+plot!(fig2a, size=(600,400))
+savefig(fig2a,"$(plotname_prefix)fig_2a.pdf")
