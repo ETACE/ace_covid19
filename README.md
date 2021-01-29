@@ -1,6 +1,6 @@
 # ETACE ACE-COVID19
 
-Version: July 2020
+Version: January 2021
 
 This is the source code of the ace_covid19 model. The economic part is partly based on the
 [EURACE@Unibi](http://www.wiwi.uni-bielefeld.de/lehrbereiche/vwl/etace/Eurace_Unibi/) model, a large-scale agent-based macroeconomic model.
@@ -26,14 +26,14 @@ To run the code you need to install **[Julia](https://julialang.org/)** (v1.4.1)
 In order to install a package, start *julia* and execute the following command:
 
 ```
-using Pkg; Pkg.add("ProgressMeter")
+using Pkg; Pkg.add("<package name>")
 ```
 
 A typical installation on desktop computer takes about 15 minutes. The code has been tested on Microsoft Windows 10, Ubuntu Server 16.04 LTS and macOS Catalina 10.15.5.
 
 ### Running The Model
 
-The model is implemented in *covid_model.jl*. In *covid_par_ini.jl*, the initial values and parameters are set. The simulation can be started from a snapshot. This needs to be specified in the *covid_par_ini.jl*-file. A snapshot with 100.000 household agents can be found in the root folder (*snapshot100kr1.dat*).
+The model is implemented in *covid_model.jl*. In *covid_par_ini.jl*, the initial values and parameters are set. The simulation can be started from a snapshot, which needs to be specified in the *covid_par_ini.jl*-file. A snapshot with 100.000 household agents can be found in the root folder (*snapshot100kr1.dat*).
 
 The user can specify a set of policies that will be activated at certain point in time during the simulation. The policies have to be implemented in specific policy-files and added to *covid_par_ini.jl*. 
 
@@ -53,12 +53,19 @@ julia -p <no_cpus> covid_run_exp.jl <folder> <no_batches>
 
 to execute a certain experiment. The simulation data of all runs will be stored in *batchdata.dat*. For an example on how to create plots from this file, see *covid_plot_exp.jl*.
 
-
 ## Replication
 
-All *covid_par_ini.jl* and *batchdata.dat files* used to create the figures and tables in the paper can be found in the *data* folder.
+All *covid_par_ini.jl* and *batchdata.dat files* used to create the figures and tables in the [working paper](https://dx.doi.org/10.2139/ssrn.3635329) from June 2020 can be found in the *data/working_paper/* folder. Our latest results (corresponding to the version of the paper from January 2021) are located in the *data/* folder.
 
-We use the following files located in the root folder to encode different policies:
+We use the following files located in the root folder to encode different policies (latest results):
+
+* *policy_lockdown_bailout.jl* - The baseline lockdown policy.
+* *policy_open.jl* - Baseline policy after lockdown.
+* *policy_allout.jl* - Policy after vaccine becomes available (terminates all measures).
+
+To vary the policy intensity (e.g. extend of business closures), we use the parameters *alpha_lockdown* and *alpha_open*.
+
+For the results from the working paper, we used the following policy files:
 
 * *policy_baseline.jl* - The baseline lockdown policy.
 * *policy_baseline_end.jl* - Baseline policy after lockdown.
@@ -68,31 +75,36 @@ We use the following files located in the root folder to encode different polici
 * *policy_bailout_alpha.jl* - Lockdown policy with more or less severe restrictions on economic activity (alpha parameter) and bailout schemes.
 * *policy_good_xi0.5.jl* - Policy after lockdown with partial economic restrictions and higher infection probability.
 * *policy_only_xi* - Lockdown policy implementing individual preventive measures only.
-* *policy_only_xi_ho* - Lockdown policy implementing individual preventive measures and working at home only
-* *policy_allout.jl* - Policy after vaccine becomes available (terminates all measures).
+* *policy_only_xi_ho* - Lockdown policy implementing individual preventive measures and working at home only.
 
 ### Data Creation
 
 To reproduce the results from the paper by re-simulating the model use the folder structure and *covid_par_ini.jl* files in the *data* folder.
-The *covid_par_ini.jl* file for e.g. the baseline (threshold=5, alpha=1.0, xi=0.6) is located in the *data/main/xi06/beta5/alpha1* folder. In order to create a batch of 20 runs, execute
+The *covid_par_ini.jl* file for e.g. the baseline is located in the *data/baseline_GER/* folder. In order to create a batch of 20 runs, execute
 
 ```
-julia -p <no_cpus> covid_run_exp.jl data/main/xi06/beta5/alpha1/ 20
+julia -p <no_cpus> covid_run_exp.jl data/baseline_GER/ 20
 ```
 
-from the root folder. The simulation results will be stored in *data/main/xi06/beta5/batchdata.dat*.
+from the root folder. The simulation results will be stored in *data/baseline_GER/batchdata.dat*.
 
 ### Plotting
 
 The plotting files are located in the *plot_files* folder. To plot all figures, use the command
 ```
+julia create_plots.jl
+```
+
+To plot all figures from the working paper, navigate to the *plot_files/working_paper/* directory and run
+```
 julia covid_plot.jl
 ```
+
 Figures are stored in the *figures* folder. Data is taken from the folder *data*. 
 
 ### Statistical Testing
 
-The file to perform the statistical tests is located in the *stat_tests* folder. Use the command
+The file to perform the statistical tests is located in the *stat_tests/working_paper/* folder. Use the command
 ```
 julia stat_test_and_data.jl
 ```
@@ -103,7 +115,7 @@ to create a text file called *stat_tests_results.txt*, which contains the result
 We make use of empirical data from the [Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19) for the number of infected and the number of casualties.
 The number of infected and the number of casualties has been adjusted by the detection rate and has been scaled to a population of 100.000.
 R0 is calculated from this data following [Robert Koch Institut's methodology](https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Archiv_Juli.html) which is available in all the daily reports.
-The adjusted data is stored in *data/baseline_GER/emp_traj_100.jl*.
+The adjusted data is stored in *emp_traj.jl* in the root folder.
 
 
 ## Authors
@@ -113,9 +125,10 @@ Alessandro Basurto, Herbert Dawid, Philipp Harting, Jasper Hepp, Dirk Kohlweyer
 
 ## Further Links
 
+* [Basurto et al. 2020](https://dx.doi.org/10.2139/ssrn.3635329) - Basurto, A., Dawid, H., Harting, P., Hepp, J., Kohlweyer, D. (2020). Economic and Epidemic Implications of Virus Containment Policies: Insights from Agent-Based Simulations
 * [ETACE](http://www.wiwi.uni-bielefeld.de/lehrbereiche/vwl/etace/) - Chair for Economic Theory and Computational Economics
 * [EURACE@Unibi](http://www.wiwi.uni-bielefeld.de/lehrbereiche/vwl/etace/Eurace_Unibi/) - description of the EURACE@Unibi model
-* [Dawid et al 2019](https://pub.uni-bielefeld.de/record/2915598) - Dawid, H., Harting, P., van der Hoog, S., & Neugart, M. (2019). Macroeconomics with heterogeneous agent models: Fostering transparency, reproducibility and replication. Journal of Evolutionary Economics.
+* [Dawid et al. 2019](https://pub.uni-bielefeld.de/record/2915598) - Dawid, H., Harting, P., van der Hoog, S., & Neugart, M. (2019). Macroeconomics with heterogeneous agent models: Fostering transparency, reproducibility and replication. Journal of Evolutionary Economics.
 
 
 ## License
