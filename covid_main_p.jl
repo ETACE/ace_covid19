@@ -33,6 +33,7 @@ totgdploss = 0
 inactivefirmstraj = zeros(datapoint+1)
 bailouttraj = zeros(datapoint+1)
 totalaccountstraj = zeros(datapoint+1)
+totalsavtraj = zeros(datapoint+1)
 R0count = Int[]  # list of number infected by infected agents
 R0counttraj = zeros(datapoint+1)
 f_av_savings_reg = zeros(datapoint+1,nsec,k1,k2)
@@ -356,6 +357,7 @@ for t = 1:datapoint
     inactivefirmstraj[t+1] = inactivefirms
     bailouttraj[t+1] = sumbailouts
     totalaccountstraj[t+1] = totalaccounts
+    totalsavtraj[t+1] = totalsav
 end
 curinfregtrajy = [curinfregtraj[i][1,:,:] for i=1:size(curinfregtraj)[1]]
 curinfregtrajo = [curinfregtraj[i][2,:,:] for i=1:size(curinfregtraj)[1]]

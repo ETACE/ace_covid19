@@ -55,7 +55,7 @@ function model_step!(covidmodel)
     global hh, firms, lochh, unemplist, shorttimelist, cas, daycounter, noinf, unemp, consumption, weeklyconsumption, shoppers, nsec
     global regcons, regemp, actshoplist, pubacc, empcount, tau,trigger, proftax, totaldiv, totalfixedcosts
     global virus, unempcount, shorttimecount, oldcount, R0count,gdp, genhomeoffice, noinftraj
-    global bankruptcypossible, inactivefirms, sumbailouts, totalaccounts, divperhh
+    global bankruptcypossible, inactivefirms, sumbailouts, totalaccounts, divperhh, totalsav
 
     global contact_count_traj, contact_work_traj, contact_social_traj, contact_shop_traj
     global contact_count, contact_work, contact_social, contact_shop, contact_num, nosuscep
@@ -64,6 +64,8 @@ function model_step!(covidmodel)
 
     # reset consumption counter
     consumption = zeros(nsec, k1, k2)
+    #reset total savings
+    totalsav = 0
 
     #determine mortaliy
     noinf = 0
@@ -342,6 +344,10 @@ function model_step!(covidmodel)
                         end
                     end
                 end
+                # transfer savings of HH to random other HH
+                permlisttemp = shuffle(union(hh[1],hh[2]))
+                heiragent = getagent(permlisttemp[1])
+                heiragent.saving += agent.saving
                 kill_agent!(agent,covidmodel)
                 continue
             end
@@ -406,6 +412,8 @@ function model_step!(covidmodel)
             agent.saving += actualincome - totcons
             agent.shopday = rand(0:6,nsec) # determine shopping days for three sectors
             agent.shoprepeat = [true, true, true] # consumer repeats shopping once if rationed
+            # calculate total savings
+            totalsav += agent.saving
         end # end daycounter = 0
 
         for tt = 1:nsec
