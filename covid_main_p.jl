@@ -6,6 +6,12 @@ if @isdefined(adaptivepolicythreshold) && !@isdefined(adaptivepolicythresholdon)
     adaptivepolicythresholdoff = adaptivepolicythreshold
 end
 
+# Check if covid_par_ini does not define mutation parameters (legacy code)
+if !@isdefined(muttime)
+    muttime = -1
+    mutnum = 0
+    pinf = pinf * [1.0, 1.0]
+end
 if loadsnapshot
     covidmodel, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption = restore_snapshot("$snapname")
 else
@@ -49,6 +55,7 @@ f_av_demandexp = zeros(datapoint+1,nsec)
 f_var_demandexp = zeros(datapoint+1,nsec)
 bankrupttraj = zeros(datapoint+1,nsec)
 inftraj = zeros(datapoint+1,3)
+inftrajmut = zeros(datapoint+1)
 totinftraj = []
 RKIR0traj = zeros(datat*datapoint+1)
 curinftraj = []
@@ -128,7 +135,7 @@ for t = 1:datapoint
     end
 
     # adjust policy variables
-    global pinf += poladjfrac*(pinft - pinf)
+    global pinf += poladjfrac*(pinft .- pinf)
     global socialmaxyyh += poladjfrac*(socialmaxyyt - socialmaxyyh)
     if socialmaxyyh >= 1
         global socialmaxyy = Int(ceil(socialmaxyyh))
@@ -169,6 +176,21 @@ for t = 1:datapoint
     for (tpol, policyfile) in policies
         if t*datat <= tpol && (t+1)*datat > tpol
             include("$policyfile")
+        end
+    end
+
+    # mutation of virus is introduced at muttime
+    if t*datat <= muttime && (t+1)*datat > muttime
+        permlist = shuffle(union(hh[1],hh[2]))
+        global mutcount = 0
+        for ii in permlist
+            if mutcount < mutnum
+                agent = getagent(ii)
+                if (agent.cor ==2) && (agent.cortime > trec - corlatent- corinf)
+                    agent.cor = 4
+                    global mutcount+=1
+                end
+            end
         end
     end
 
@@ -266,10 +288,10 @@ for t = 1:datapoint
         dataf[id,4] = current_agent.stock
         dataf[id,5] = current_agent.demandexp
     end
-    inftraj[t+1,1] =sum(datahhy[:,2] .== 2) / nhhy
-    inftraj[t+1,2] =sum(datahho[:,2] .== 2) / nhho
-    inftraj[t+1,3] = (sum(datahhy[:,2] .== 2) .+ sum(datahho[:,2] .== 2)) / nhh
-
+    inftraj[t+1,1] =(sum(datahhy[:,2] .== 2) .+ sum(datahhy[:,2] .== 4))/ nhhy
+    inftraj[t+1,2] =(sum(datahho[:,2] .== 2) .+ sum(datahhy[:,2] .== 4)) / nhho
+    inftraj[t+1,3] = (sum(datahhy[:,2] .== 2) .+ sum(datahho[:,2] .== 2) .+ sum(datahhy[:,2] .== 4) .+ sum(datahho[:,2] .== 4)) / nhh
+    inftrajmut[t+1] = (sum(datahhy[:,2] .== 4) .+ sum(datahho[:,2] .== 4)) / nhh
 
     for tt = 1:nsec
              tempsavreg = [[] for i = 1:k1, j = 1:k2]

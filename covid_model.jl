@@ -5,7 +5,7 @@ mutable struct GenericAgent <: AbstractAgent
     pos::Tuple{Int,Int} #region
     type::Int # 1 - nsec+1 HH, nsec + 2 - 2*(nsec+1) Firm, man / service / Food/public
     age:: Int # 1 young, 2 old
-    cor::Int #infection status: 1 susceptible, 2 infected, 3 recovered
+    cor::Int #infection status: 1 susceptible, 2 infected, 3 recovered, 4 infected with mutant
     cortime:: Int # time of infection
     infect:: Int # number of people infected by this agent
     emp:: Int #employer ID, 0 is unemployed
@@ -52,7 +52,7 @@ end
 
 # one step in the dynamics
 function model_step!(covidmodel)
-    global hh, firms, lochh, unemplist, shorttimelist, cas, daycounter, noinf, unemp, consumption, weeklyconsumption, shoppers, nsec
+    global hh, firms, lochh, unemplist, shorttimelist, cas, daycounter, noinf, noinfmut, unemp, consumption, weeklyconsumption, shoppers, nsec
     global regcons, regemp, actshoplist, pubacc, empcount, tau,trigger, proftax, totaldiv, totalfixedcosts
     global virus, unempcount, shorttimecount, oldcount, R0count,gdp, genhomeoffice, noinftraj
     global bankruptcypossible, inactivefirms, sumbailouts, totalaccounts, divperhh, totalsav
@@ -69,10 +69,14 @@ function model_step!(covidmodel)
 
     #determine mortaliy
     noinf = 0
+    noinfmut = 0
     aginf = 0
     for i in union(hh[1],hh[2])
-        if getagent(i).cor ==2
+        if (getagent(i).cor ==2) || (getagent(i).cor ==4)
             noinf = noinf +1
+        end
+        if (getagent(i).cor ==4)
+            noinfmut = noinfmut +1
         end
         if getagent(i).cor > 1
             aginf +=1
@@ -323,7 +327,7 @@ function model_step!(covidmodel)
         agent = getagent(ii)
         # potential death of agent
 
-        if agent.cor == 2 # if infected
+        if (agent.cor == 2) || (agent.cor == 4) # if infected
             if rand() < mort[agent.age]
                 setdiff!(hh[agent.age],agent.id)
                 delete!(lochh[agent.age,agent.pos[1],agent.pos[2]],agent.id)
@@ -476,12 +480,12 @@ function model_step!(covidmodel)
     if virus
         for ii in union(hh[1],hh[2])
             agent = getagent(ii)
-            if agent.cor == 2
+            if (agent.cor == 2) || (agent.cor == 4)
                 global curinfcount[agent.age] += 1
                 global curinfregcount[agent.age,agent.pos[1], agent.pos[2]] += 1
             end
             # possible infection
-            if (agent.cor==2)  && (agent.cortime < trec - corlatent) && (agent.cortime > trec - corlatent- corinf)
+            if ((agent.cor==2)|| (agent.cor == 4))  && (agent.cortime < trec - corlatent) && (agent.cortime > trec - corlatent- corinf)
                 contact_num += 1
                 # first infection at the workplace
                 if agent.emp > 0 && !agent.shorttime
@@ -492,8 +496,8 @@ function model_step!(covidmodel)
                         for i in shuffle(collect(keys(idlist)))[1:min(nummeet,length(idlist))]
                             partner = getagent(i)
                             contact_work = contact_work + 1 # add contatcs
-                            if rand() < pinf && partner.cor == 1 && !(partner.homeoffice && genhomeoffice && rand() < phomeoffice) && !partner.shorttime
-                                partner.cor=2
+                            if (rand() < pinf[Int(agent.cor/2)]) && partner.cor == 1 && !(partner.homeoffice && genhomeoffice && rand() < phomeoffice) && !partner.shorttime
+                                partner.cor=agent.cor
                                 partner.cortime = trec
                                 agent.infect +=1
                             end
@@ -511,8 +515,8 @@ function model_step!(covidmodel)
                             for i in shopcontact
                                 partner = getagent(i)
                                 contact_shop = contact_shop + 1 # add contacts
-                                if (rand() < pinf) &&  (partner.cor ==1)
-                                    partner.cor=2
+                                if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                    partner.cor=agent.cor
                                     partner.cortime = trec
                                     agent.infect +=1
                                 end
@@ -540,8 +544,8 @@ function model_step!(covidmodel)
                             for i in helpcontact
                                 partner = getagent(i)
                                 contact_social = contact_social + 1 # add contacts
-                                if (rand() < pinf) &&  (partner.cor ==1)
-                                    partner.cor=2
+                                if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                    partner.cor=agent.cor
                                     partner.cortime = trec
                                     agent.infect +=1
                                 end
@@ -565,8 +569,8 @@ function model_step!(covidmodel)
                             for i in helpcontact
                                 partner = getagent(i)
                                 contact_social = contact_social + 1 # add contacts
-                                if (rand() < pinf) &&  (partner.cor ==1)
-                                    partner.cor=2
+                                if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                    partner.cor=agent.cor
                                     partner.cortime = trec
                                     agent.infect +=1
                                 end
@@ -589,8 +593,8 @@ function model_step!(covidmodel)
                         for i in helpcontact
                             partner = getagent(i)
                             contact_social = contact_social + 1 # add contacts
-                            if (rand() < pinf) &&  (partner.cor ==1)
-                                partner.cor=2
+                            if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                partner.cor=agent.cor
                                 partner.cortime = trec
                                 agent.infect +=1
                             end
@@ -612,8 +616,8 @@ function model_step!(covidmodel)
                         for i in helpcontact
                             partner = getagent(i)
                             contact_social = contact_social + 1 # add contacts
-                            if (rand() < pinf) &&  (partner.cor ==1)
-                                partner.cor=2
+                            if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                partner.cor=agent.cor
                                 partner.cortime = trec
                                 agent.infect +=1
                             end

@@ -15,6 +15,12 @@ if @isdefined(adaptivepolicythreshold) && !@isdefined(adaptivepolicythresholdon)
     adaptivepolicythresholdoff = adaptivepolicythreshold
 end
 
+# Check if covid_par_ini does not define mutation parameters (legacy code)
+if !@isdefined(muttime)
+    muttime = -1
+    mutnum = 0
+    pinf = pinf * [1.0, 1.0]
+end
 if loadsnapshot
     covidmodel, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption = restore_snapshot("$snapname")
 else
@@ -59,6 +65,8 @@ f_av_stock = zeros(datapoint+1,nsec)
 f_av_demandexp = zeros(datapoint+1,nsec)
 f_var_demandexp = zeros(datapoint+1,nsec)
 bankrupttraj = zeros(datapoint+1,nsec)
+inftraj = zeros(datapoint+1,3)
+inftrajmut = zeros(datapoint+1)
 totinftraj = []
 RKIR0traj = zeros(datat*datapoint+1)
 curinftraj = []
@@ -153,13 +161,14 @@ badpoltime = 0
                 end
             end
         end
+
         global trigger = false
         global virus = true  # activate virus spreading in model_step
         global totgdploss = 0
     end
 
     # adjust policy variables
-    global pinf += poladjfrac*(pinft - pinf)
+    global pinf += poladjfrac*(pinft .- pinf)
     global socialmaxyyh += poladjfrac*(socialmaxyyt - socialmaxyyh)
     if socialmaxyyh >= 1
         global socialmaxyy = Int(ceil(socialmaxyyh))
@@ -210,14 +219,29 @@ badpoltime = 0
         end
     end
 
+    # mutation of virus is introduced at muttime
+    if t*datat <= muttime && (t+1)*datat > muttime
+        permlist = shuffle(union(hh[1],hh[2]))
+        global mutcount = 0
+        for ii in permlist
+            if mutcount < mutnum
+                agent = getagent(ii)
+                if (agent.cor ==2) && (agent.cortime > trec - corlatent- corinf)
+                    agent.cor = 4
+                    global mutcount+=1
+                end
+            end
+        end
+    end
+
+    noinfbow = totinftraj[size(totinftraj, 1)]
+
     global end_bailout_after_weeks
     if t > end_bailout_after_weeks
         global bailoutprogram = false
         global shorttimeprogram = false
     end
 
-    #step!(covidmodel, dummystep, model_step!, datat)
-    noinfbow = totinftraj[size(totinftraj, 1)]
     for j = 1:datat
         global ttt +=1
         step!(covidmodel, dummystep, model_step!, 1)
