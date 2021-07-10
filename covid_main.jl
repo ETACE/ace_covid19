@@ -21,6 +21,15 @@ if !@isdefined(muttime)
     mutnum = 0
     pinf = pinf * [1.0, 1.0]
 end
+
+# Check if covid_par_ini does not define more detailed vaccination parameters (legacy code)
+if !@isdefined(vaccspeed)
+    vaccspeed = nhh
+    vaccefficiency = 1.0
+    vaccwillingness_old = 1.0
+    vaccwillingness_young = 1.0
+end
+
 if loadsnapshot
     covidmodel, lochh, locf, unemplist, shorttimelist, empcount, unempcount, shorttimecount, oldcount, unemp, firms, hh, tau, divperhh, weeklyconsumption = restore_snapshot("$snapname")
 else
@@ -75,8 +84,12 @@ contact_count_traj = [] # list of number of contatcs
 contact_work_traj = [] # list of number of contatcs in work
 contact_social_traj = [] # list of number of social contatcs
 contact_shop_traj = [] # list of number of contatcs shopping
+vacctraj = zeros(datapoint+1)
+notvacctraj = zeros(datapoint+1)
 bankruptcount = zeros(nsec)
 
+vacctraj[1] = 0
+notvacctraj[1] = 0
 
 # initial datapoint
 for id in hh[1]
@@ -138,6 +151,11 @@ ttt=0
 currentadaptivepolicy = "NONE"
 polswitchcount = 0
 badpoltime = 0
+vaccpos_old = 0
+vaccpos_young = 0
+
+notvacc_old = 0
+notvacc_young = 0
 
 #iteration
 @showprogress for t = 1:datapoint
@@ -243,6 +261,30 @@ badpoltime = 0
     end
 
     for j = 1:datat
+        # Vaccinations
+        if ttt >= vacctime
+            vacctoday = 0
+            while vacctoday < vaccspeed && vaccpos_old < length(hh[2])
+                global vaccpos_old+=1
+                if rand() < vaccwillingness_old && rand() < vaccefficiency
+                    vacctoday+=1
+                    covidmodel[hh[2][vaccpos_old]].vaccinated = true
+                else
+                    global notvacc_old+=1
+                end
+            end
+
+            while vacctoday < vaccspeed && vaccpos_young < length(hh[1])
+                global vaccpos_young+=1
+                if rand() < vaccwillingness_young && rand() < vaccefficiency
+                    vacctoday+=1
+                    covidmodel[hh[1][vaccpos_young]].vaccinated = true
+                else
+                    global notvacc_young+=1
+                end
+            end
+        end
+
         global ttt +=1
         step!(covidmodel, dummystep, model_step!, 1)
         if ttt > 9 && totinftraj[ttt-8] > 0
@@ -284,6 +326,8 @@ badpoltime = 0
           end
       end
 
+    vacctraj[t+1] = vaccpos_old + vaccpos_young - notvacc_old - notvacc_young
+    notvacctraj[t+1] = notvacc_old + notvacc_young
     for id in hh[1]
         current_agent = getagent(id)
         datahhy[t+1,id,1] = ((current_agent.pos[1]-1)*k2+current_agent.pos[2])

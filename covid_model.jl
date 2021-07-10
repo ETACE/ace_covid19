@@ -6,6 +6,7 @@ mutable struct GenericAgent <: AbstractAgent
     type::Int # 1 - nsec+1 HH, nsec + 2 - 2*(nsec+1) Firm, man / service / Food/public
     age:: Int # 1 young, 2 old
     cor::Int #infection status: 1 susceptible, 2 infected, 3 recovered, 4 infected with mutant
+    vaccinated::Bool # true, if agent has been vaccinated
     cortime:: Int # time of infection
     infect:: Int # number of people infected by this agent
     emp:: Int #employer ID, 0 is unemployed
@@ -496,7 +497,7 @@ function model_step!(covidmodel)
                         for i in shuffle(collect(keys(idlist)))[1:min(nummeet,length(idlist))]
                             partner = getagent(i)
                             contact_work = contact_work + 1 # add contatcs
-                            if (rand() < pinf[Int(agent.cor/2)]) && partner.cor == 1 && !(partner.homeoffice && genhomeoffice && rand() < phomeoffice) && !partner.shorttime
+                            if !partner.vaccinated && (rand() < pinf[Int(agent.cor/2)]) && partner.cor == 1 && !(partner.homeoffice && genhomeoffice && rand() < phomeoffice) && !partner.shorttime
                                 partner.cor=agent.cor
                                 partner.cortime = trec
                                 agent.infect +=1
@@ -515,7 +516,7 @@ function model_step!(covidmodel)
                             for i in shopcontact
                                 partner = getagent(i)
                                 contact_shop = contact_shop + 1 # add contacts
-                                if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                if !partner.vaccinated && (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
                                     partner.cor=agent.cor
                                     partner.cortime = trec
                                     agent.infect +=1
@@ -544,7 +545,7 @@ function model_step!(covidmodel)
                             for i in helpcontact
                                 partner = getagent(i)
                                 contact_social = contact_social + 1 # add contacts
-                                if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                if !partner.vaccinated && (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
                                     partner.cor=agent.cor
                                     partner.cortime = trec
                                     agent.infect +=1
@@ -569,7 +570,7 @@ function model_step!(covidmodel)
                             for i in helpcontact
                                 partner = getagent(i)
                                 contact_social = contact_social + 1 # add contacts
-                                if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                                if !partner.vaccinated && (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
                                     partner.cor=agent.cor
                                     partner.cortime = trec
                                     agent.infect +=1
@@ -593,7 +594,7 @@ function model_step!(covidmodel)
                         for i in helpcontact
                             partner = getagent(i)
                             contact_social = contact_social + 1 # add contacts
-                            if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                            if !partner.vaccinated && (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
                                 partner.cor=agent.cor
                                 partner.cortime = trec
                                 agent.infect +=1
@@ -616,7 +617,7 @@ function model_step!(covidmodel)
                         for i in helpcontact
                             partner = getagent(i)
                             contact_social = contact_social + 1 # add contacts
-                            if (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
+                            if !partner.vaccinated && (rand() < pinf[Int(agent.cor/2)]) &&  (partner.cor ==1)
                                 partner.cor=agent.cor
                                 partner.cortime = trec
                                 agent.infect +=1
