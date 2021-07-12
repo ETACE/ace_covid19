@@ -36,7 +36,7 @@ alpha_lockdown = 1.0
 alpha_open = 0.0
 tpol = virustime + 21
 policies = Dict{Int64,String}()
-policies[tpol] = "policy_lockdown_bailout.jl"
+policies[tpol] = "policy_lockdown_2.jl"
 policies[vacctime] = "policy_allout.jl"
 
 detfrac = 0.15 # detection frequency
@@ -46,8 +46,8 @@ poladjfrac = 0.6 # factor by which gap in policy parameter is closeed during pha
 
 tadaptivepolicystart = tpol + 21 # Enable adaptive policy response
 tadaptivepolicyend = vacctime - 7 # Enable adaptive policy response
-adaptivepolicygood = "policy_open.jl" # policy acitvated if number of infected above threshold
-adaptivepolicybad = "policy_lockdown_bailout.jl" #  policy activated if number of infected below threshold
+adaptivepolicygood = "policy_open_2.jl" # policy acitvated if number of infected above threshold
+adaptivepolicybad = "policy_lockdown_2.jl" #  policy activated if number of infected below threshold
 
 fracy = .75 # fraction of young households
 avempl = 15 # average number of employees per firm
@@ -72,11 +72,13 @@ shopmeet = [10,28,10] # max number of people met at each shopping instant  man /
 homeofficefrac = [.45,.3,.0 ,0.75] # data taken from Fadinger/Schymik: man / ser / food /public
 phomeoffice = 0
 
-pinf = 0.0725 # infection prob at meeting
+pinf = 0.0725*[1,1.5] # infection prob at meeting before/after mutation
+muttime =180 # time of mutation
+mutnum = 5 # number of mutating
 trec = 21 # recovery time
 corlatent = 5 # latency time
 corinf = 5 # infectious period
-hcap = Int(round(0.0003*(nhh))) # no of intensive beds based on 30 per 100.000
+hcap = Int(0.5*round(0.0003*(nhh))) # no of intensive beds based on 30 per 100.000
 mortl = detfrac*[0.0066/trec, 0.16/trec] # mortality young, old, normal cap, data from Germany
 morth = detfrac*[0.018/trec, 0.5/trec] # mortality young, old, overcap, data from Italy
 icufrac = detfrac*0.085 # fraction of infected needing intensive care unit
@@ -161,10 +163,10 @@ pastrevini = 10000*[1,1,1,1] # intitializations of past revenue
 virus = false # initially there is no virus
 genhomeoffice = false # initially no home-office
 bailoutprogram = false # initially no bailouts
-end_bailout_after_weeks = 52
+end_bailout_after_weeks = 78
 shorttimeprogram = false # initially no short term program
-shorttimeperiod = 52
-shorttimeprob = 0.75
+shorttimeperiod = 78
+shorttimeprob = 0.9
 demandexpini = [1700,1000,600,0]
 
 # list for total consumption i regions
