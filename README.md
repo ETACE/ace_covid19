@@ -1,6 +1,6 @@
 # ETACE ACE-COVID19
 
-Version: January 2021
+Version: July 2021
 
 This is the source code of the ace_covid19 model. The economic part is partly based on the
 [EURACE@Unibi](http://www.wiwi.uni-bielefeld.de/lehrbereiche/vwl/etace/Eurace_Unibi/) model, a large-scale agent-based macroeconomic model.
@@ -55,17 +55,23 @@ to execute a certain experiment. The simulation data of all runs will be stored 
 
 ## Replication
 
-All *covid_par_ini.jl* and *batchdata.dat files* used to create the figures and tables in the [working paper](https://dx.doi.org/10.2139/ssrn.3635329) from June 2020 can be found in the *data/working_paper/* folder. Our latest results (corresponding to the version of the paper from January 2021) are located in the *data/* folder.
+All *covid_par_ini.jl* and *batchdata.dat files* used to create the figures and tables in the [first working paper](https://dx.doi.org/10.2139/ssrn.3635329) (June 2020) and [second working paper](https://dx.doi.org/10.2139/ssrn.3799928) (February 2021) can be found in the *data/working_paper/* and *data/working_paper_2/* folders. Data Our latest results (corresponding to the version of the paper from July 2021) are located in the *data/* folder.
 
 We use the following files located in the root folder to encode different policies (latest results):
+
+* *policy_lockdown_2.jl* - The baseline lockdown policy.
+* *policy_open_2.jl* - Baseline policy after lockdown.
+* *policy_allout.jl* - Policy after vaccine becomes available (terminates all measures).
+
+To vary the policy intensity (e.g. extend of business closures), we use the parameters *alpha_lockdown* and *alpha_open*.
+
+For the results from the second working paper, we used the following policy files:
 
 * *policy_lockdown_bailout.jl* - The baseline lockdown policy.
 * *policy_open.jl* - Baseline policy after lockdown.
 * *policy_allout.jl* - Policy after vaccine becomes available (terminates all measures).
 
-To vary the policy intensity (e.g. extend of business closures), we use the parameters *alpha_lockdown* and *alpha_open*.
-
-For the results from the working paper, we used the following policy files:
+For the results from the first working paper, we used the following policy files:
 
 * *policy_baseline.jl* - The baseline lockdown policy.
 * *policy_baseline_end.jl* - Baseline policy after lockdown.
@@ -94,21 +100,15 @@ The plotting files are located in the *plot_files* folder. To plot all figures, 
 ```
 julia create_plots.jl
 ```
-
-To plot all figures from the working paper, navigate to the *plot_files/working_paper/* directory and run
-```
-julia covid_plot.jl
-```
-
 Figures are stored in the *figures* folder. Data is taken from the folder *data*. 
 
 ### Statistical Testing
 
-The file to perform the statistical tests is located in the *stat_tests/working_paper/* folder. Use the command
+The file to perform the statistical tests is located in the *stat_tests/* folder. Use the command
 ```
-julia stat_test_and_data.jl
+julia execute_tests.jl
 ```
-to create a text file called *stat_tests_results.txt*, which contains the results of all statistical tests.
+to create text files, which contains the results of all statistical tests.
 
 ### Empirical Data
 
