@@ -3,8 +3,8 @@ using Statistics,Serialization,StatsPlots, DataFrames, LaTeXStrings
 
 
 filename_prefix = "..//..//data//working_paper//main//xi06//"
-plotname_prefix = "..//..//figures//main_xi06_comparison_" # store the plots here
-
+plotname_prefix = "..//..//figures//working_paper//main_xi06_comparison_" # store the plots here
+mkpath(plotname_prefix)
 
 show_capacity = false # for infected plot
 

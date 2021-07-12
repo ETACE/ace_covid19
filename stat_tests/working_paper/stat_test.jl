@@ -77,7 +77,7 @@ println(io,"\n pvalue for CAS A1 vs C1: ", p)
 
 
 ### include points from xi05
-filename_prefix = "..//data//main//xi05//"
+filename_prefix = "..//..//data//working_paper//main//xi05//"
 # POINT A, B, C in fig 2a
 paras2 = ["beta5//alpha1","beta5//alpha25","beta30//alpha1"]
 
@@ -162,7 +162,7 @@ println(io,"\n pvalue for CAS C1 vs C2: ", p)
 
 ### between different starting weeks
 
-filename_prefix = "..//data//adap_start//"
+filename_prefix = "..//..//data//working_paper//adap_start//"
 
 paras3 = ["week1","week2","week3","week4"]
 
@@ -179,14 +179,14 @@ polsw_all_means = DataFrame()
 for (i,p) in enumerate(paras3)
     data_prefix = string("$(filename_prefix)", p , "//")
     if p == "week2"
-        data_prefix = string("..//data//main//xi06//beta5//alpha1//")
+        data_prefix = string("..//..//data//working_paper//main//xi06//beta5//alpha1//")
     end
     # store data scatterplot
     worker_results = deserialize(open("$(data_prefix)batchdata.dat"))
     gdploss_all = (results -> results[:togdploss]).(worker_results)
     totcas_all = 100*(results -> results[:totcas]).(worker_results)
-    gdploss_all_means[Symbol.(paras3[i])] = gdploss_all
-    totcas_all_means[Symbol.(paras3[i])] = totcas_all
+    gdploss_all_means[!, Symbol.(paras3[i])] = gdploss_all
+    totcas_all_means[!, Symbol.(paras3[i])] = totcas_all
 end
 
 
@@ -194,10 +194,10 @@ println(io,"\n \n TEST BETWEEN DIFFERENT STARTING WEEKS\n")
 
 
 println(io,"\n TESTS FOR GDP\n ")
-week1 = gdploss_all_means[1]
-week2 = gdploss_all_means[2]
-week3 = gdploss_all_means[3]
-week4 = gdploss_all_means[4]
+week1 = gdploss_all_means[!, 1]
+week2 = gdploss_all_means[!, 2]
+week3 = gdploss_all_means[!, 3]
+week4 = gdploss_all_means[!, 4]
 
 HypothesisTests.MannWhitneyUTest(week1, week2)
 p = pvalue(HypothesisTests.MannWhitneyUTest(week1, week2))
@@ -214,10 +214,10 @@ println(io,"\n pvalue for week 1 vs 4: ", p)
 
 println(io,"\n \n TESTS FOR TOT CAS\n")
 
-week1 = totcas_all_means[1]
-week2 = totcas_all_means[2]
-week3 = totcas_all_means[3]
-week4 = totcas_all_means[4]
+week1 = totcas_all_means[!, 1]
+week2 = totcas_all_means[!, 2]
+week3 = totcas_all_means[!, 3]
+week4 = totcas_all_means[!, 4]
 
 HypothesisTests.MannWhitneyUTest(week1, week2)
 p = pvalue(HypothesisTests.MannWhitneyUTest(week1, week2))

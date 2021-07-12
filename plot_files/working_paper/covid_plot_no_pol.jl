@@ -6,7 +6,8 @@ using Statistics,Serialization,StatsPlots, DataFrames
 filename_prefix = "..//..//data//working_paper//no_pol//"
 paras = ["nopol","xi06","xi06_ho"]
 
-plotname_prefix = "..//..//figures//no_pol_" # store the plots here
+plotname_prefix = "..//..//figures//working_paper//no_pol_" # store the plots here
+mkpath(plotname_prefix)
 
 show_capacity = true # for icu capacity in infetected plot
 
@@ -66,36 +67,36 @@ for (i,p) in enumerate(paras)
     # store data boxplot
     gdploss_all = (results -> results[:togdploss]).(worker_results)
     totcas_all = 100*(results -> results[:totcas]).(worker_results)
-    gdploss_all_means[Symbol.(paras[i])] = gdploss_all
-    totcas_all_means[Symbol.(paras[i])] = totcas_all
+    gdploss_all_means[!, Symbol.(paras[i])] = gdploss_all
+    totcas_all_means[!, Symbol.(paras[i])] = totcas_all
     # store data dynamics
     totinfmean_all = vec(mean(hcat((results -> results[:totinftraj]).(worker_results)...), dims=2))
     totinfstd_all = vec(std(hcat((results -> results[:totinftraj]).(worker_results)...), dims=2))
-    totinfmean_all_means[Symbol.(paras[i])] = totinfmean_all
-    totinfstd_all_means_plus[Symbol.(paras[i])] = totinfmean_all + totinfstd_all
-    totinfstd_all_means_minus[Symbol.(paras[i])] = totinfmean_all - totinfstd_all
+    totinfmean_all_means[!, Symbol.(paras[i])] = totinfmean_all
+    totinfstd_all_means_plus[!, Symbol.(paras[i])] = totinfmean_all + totinfstd_all
+    totinfstd_all_means_minus[!, Symbol.(paras[i])] = totinfmean_all - totinfstd_all
     infmean = vec(mean(100*cat((results -> results[:inftraj]).(worker_results)...,dims=3), dims=3)[2:nn,3])
     infstd = vec(std(100*cat((results -> results[:inftraj]).(worker_results)...,dims=3), dims=3)[2:nn,3])
-    infmean_all_means[Symbol.(paras[i])] = infmean
-    infstd_all_means_plus[Symbol.(paras[i])] = infmean + infstd
-    infstd_all_means_minus[Symbol.(paras[i])] = infmean - infstd
+    infmean_all_means[!, Symbol.(paras[i])] = infmean
+    infstd_all_means_plus[!, Symbol.(paras[i])] = infmean + infstd
+    infstd_all_means_minus[!, Symbol.(paras[i])] = infmean - infstd
     totcasmean = vec(mean(cat(100*(results -> results[:totcastraj]).(worker_results)...,dims=3), dims=3)[2:nn,3])
     totcasstd = vec(std(cat(100*(results -> results[:totcastraj]).(worker_results)...,dims=3), dims=3)[2:nn,3])
-    totcasmean_all_means[Symbol.(paras[i])] = totcasmean
-    totcasstd_all_means_plus[Symbol.(paras[i])] = totcasmean + totcasstd
-    totcasstd_all_means_minus[Symbol.(paras[i])] = totcasmean - totcasstd
+    totcasmean_all_means[!, Symbol.(paras[i])] = totcasmean
+    totcasstd_all_means_plus[!, Symbol.(paras[i])] = totcasmean + totcasstd
+    totcasstd_all_means_minus[!, Symbol.(paras[i])] = totcasmean - totcasstd
     # gdp
     gdpmean_all = vec(mean(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2))
     gdpstd_all = vec(std(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2))
-    gdpmean_all_means[Symbol.(paras[i])] = gdpmean_all
-    gdpstd_all_means_plus[Symbol.(paras[i])] = gdpmean_all + gdpstd_all
-    gdpstd_all_means_minus[Symbol.(paras[i])] = gdpmean_all - gdpstd_all
+    gdpmean_all_means[!, Symbol.(paras[i])] = gdpmean_all
+    gdpstd_all_means_plus[!, Symbol.(paras[i])] = gdpmean_all + gdpstd_all
+    gdpstd_all_means_minus[!, Symbol.(paras[i])] = gdpmean_all - gdpstd_all
     # unemployment
     unempmean_all = vec(mean(hcat((results -> results[:unempltraj]).(worker_results)...), dims=2))
     unempstd_all = vec(std(hcat((results -> results[:unempltraj]).(worker_results)...), dims=2))
-    unempmean_all_means[Symbol.(paras[i])] = unempmean_all
-    unempstd_all_means_plus[Symbol.(paras[i])] = unempmean_all + unempstd_all
-    unempstd_all_means_minus[Symbol.(paras[i])] = unempmean_all - unempstd_all
+    unempmean_all_means[!, Symbol.(paras[i])] = unempmean_all
+    unempstd_all_means_plus[!, Symbol.(paras[i])] = unempmean_all + unempstd_all
+    unempstd_all_means_minus[!, Symbol.(paras[i])] = unempmean_all - unempstd_all
 end
 
 

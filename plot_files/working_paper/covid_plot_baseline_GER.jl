@@ -1,6 +1,8 @@
 using Statistics,Serialization,StatsPlots
 filename_prefix = "..//..//data//working_paper//baseline_GER//"
-plotname_prefix = "..//..//figures//baseline_GER_"
+plotname_prefix = "..//..//figures//working_paper//baseline_GER_"
+mkpath(plotname_prefix)
+
 include("$(filename_prefix)covid_par_ini.jl")
 worker_results = deserialize(open("$(filename_prefix)batchdata.dat"))
 
