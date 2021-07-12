@@ -11,8 +11,11 @@ worker_results = deserialize(open("$(path_to_data)batchdata.dat"))
 
 datapoint = fld(T,datat)
 
+empn = 200 # number of periods for empirical plots
+
 gdpmean = mean(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2)
 gdpstd = std(hcat((results -> results[:gdppercaptraj]).(worker_results)...), dims=2)
+gdpall = hcat((results -> results[:gdppercaptraj]).(worker_results)...)
 nn = size(gdpmean)[1]
 pl1 = plot(datat*collect(2:nn),[gdpmean[2:nn], gdpmean[2:nn].-gdpstd[2:nn],gdpmean[2:nn].+gdpstd[2:nn]], linestyle = [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label = ["GDP" "" ""])
 savefig(pl1,"$(filename_prefix)gdpdyn.pdf")
@@ -55,18 +58,24 @@ savefig(pl5a,"$(filename_prefix)totinfemp.pdf")
 
 emptotinftraj = vcat(zeros(nzer),fac*emptotinfnew)
 nnen = size(emptotinfnew)[1]
-nnen = 180
+nnen = empn
 totinfmeansc = mean(hcat(detfrac*(results -> results[:totinftraj]).(worker_results)...), dims=2)
 totinfstdsc = std(hcat(detfrac*(results -> results[:totinftraj]).(worker_results)...), dims=2)
 pl5b = plot(collect(1:nnen),[totinfmeansc[nzer+1:nzer+nnen], totinfmeansc[nzer+1:nzer+nnen].-totinfstdsc[nzer+1:nzer+nnen],totinfmeansc[nzer+1:nzer+nnen].+totinfstdsc[nzer+1:nzer+nnen]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black],label = false, xlabel="days", ylabel = "reported tot. inf.")
+
 plot!(pl5b, detfrac*emptotinftraj[nzer+1:nzer+nnen], linecolor = [:green], label=false, linewidth = [2])
 savefig(pl5b,"$(filename_prefix)totinfempnew.pdf")
-emptotinftraj = vcat(zeros(nzer),fac*emptotinfnew_DZ)
-plot!(pl5b, detfrac*emptotinftraj[nzer+1:nzer+nnen], linecolor = [:red], label=false, linewidth = [2])
-savefig(pl5b,"$(filename_prefix)totinfempnew_DZ.pdf")
 
+totinfvec = 100000/nhh*hcat((results -> results[:totinftraj]).(worker_results)...)
 
+pl5c = plot(collect(1:nnen), detfrac*totinfvec[:,1][nzer+1:nzer+nnen], linecolor = [:grey], label=false, linewidth = [0.5])
+for i in 2:length(totinfvec[1,:])
+    plot!(pl5c, detfrac*totinfvec[:,i][nzer+1:nzer+nnen], linecolor = [:grey], label=false, linewidth = [0.5])
+end
 
+plot!(pl5c,[totinfmeansc[nzer+1:nzer+nnen], totinfmeansc[nzer+1:nzer+nnen].-totinfstdsc[nzer+1:nzer+nnen],totinfmeansc[nzer+1:nzer+nnen].+totinfstdsc[nzer+1:nzer+nnen]], linestyle= [:solid :dot :dot], linewidth = [2 2 2], linecolor = [:blue :black :black],label = false, xlabel="days", ylabel = "reported tot. inf.")
+plot!(pl5c, detfrac*emptotinftraj[nzer+1:nzer+nnen], linecolor = [:green], label=false, linewidth = [2])
+savefig(pl5c,"$(filename_prefix)totinfempnew_single.pdf")
 
 hcapfrac = zeros(datapoint+1)
 for th = 1:datapoint+1
@@ -74,11 +83,11 @@ for th = 1:datapoint+1
 end
 infmean = mean(cat((results -> results[:inftraj]).(worker_results)...,dims=3), dims=3)
 infstd = std(cat((results -> results[:inftraj]).(worker_results)...,dims=3), dims=3)
+infall = cat((results -> results[:inftraj]).(worker_results)...,dims=3)
 pl6 = plot(datat*collect(2:nn),[infmean[2:nn,1], infmean[2:nn,1].-infstd[2:nn,1],infmean[2:nn,1].+infstd[2:nn,1],hcapfrac[2:nn]], linestyle = [:solid :dot :dot :solid], linewidth = [2 1 1 1], linecolor = [:blue :black :black :black],label = ["y" "" "" "cap"])
 plot!(datat*collect(2:nn),[infmean[2:nn,2], infmean[2:nn,2].-infstd[2:nn,2],infmean[2:nn,2].+infstd[2:nn,2]], linestyle = [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:red :black :black],label = ["o" "" ""])
 plot!(datat*collect(2:nn),[infmean[2:nn,3], infmean[2:nn,3].-infstd[2:nn,3],infmean[2:nn,3].+infstd[2:nn,3]], linestyle = [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:green :black :black],label = ["tot" "" ""])
 savefig(pl6,"$(filename_prefix)infdyn.pdf")
-
 
 inf = cat((results -> results[:inftraj]).(worker_results)...,dims=3)
 inf_total = inf[:,3,:] .*nhh
@@ -128,7 +137,6 @@ savefig(pl7,"$(filename_prefix)casdyn.pdf")
 nzer= (Int(ceil(virustime/datat+2*corlatent/datat))-1)
 empcastraj = vcat(zeros(datat*nzer),fac*empcas)
 nne = Int(ceil(size(empcas)[1]/datat))
-nne = Int(ceil(180/datat))
 pl7a = plot(datat*collect(1:nne),[totcasmean[nzer+1:nzer+nne,3], totcasmean[nzer+1:nzer+nne,3].-totcasstd[nzer+1:nzer+nne,3],totcasmean[nzer+1:nzer+nne,3].+totcasstd[nzer+1:nzer+nne,3]], linestyle = [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black] )
 plot!(empcastraj[datat*nzer+1:size(empcastraj)[1]], linecolor = [:green], linewidth = [2], legend = false, xlabel = "days", ylabel = "casualties [%]")
 savefig(pl7a,"$(filename_prefix)casemp.pdf")
@@ -136,9 +144,9 @@ savefig(pl7a,"$(filename_prefix)casemp.pdf")
 nzer= (Int(ceil(virustime/datat+2*corlatent/datat))-1)
 empcastraj = vcat(zeros(datat*nzer),fac*empcasnew)
 nne = Int(ceil(size(empcasnew)[1]/datat))
-nne = Int(ceil(180 / datat))
+nne = Int(ceil(empn / datat))
 pl7b = plot(datat*collect(1:nne),[totcasmean[nzer+1:nzer+nne,3], totcasmean[nzer+1:nzer+nne,3].-totcasstd[nzer+1:nzer+nne,3],totcasmean[nzer+1:nzer+nne,3].+totcasstd[nzer+1:nzer+nne,3]], linestyle = [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black] )
-plot!(pl7b, empcastraj[datat*nzer+1:180+datat*nzer], linecolor = [:green], linewidth = [2], legend = false, xlabel = "days", ylabel = "casualties [%]")
+plot!(pl7b, empcastraj[datat*nzer+1:empn+datat*nzer], linecolor = [:green], linewidth = [2], legend = false, xlabel = "days", ylabel = "casualties [%]")
 savefig(pl7b,"$(filename_prefix)casempnew.pdf")
 
 
@@ -198,7 +206,7 @@ RKIR0smmean = mean(hcat((results -> results[:RKIR0smtraj]).(worker_results)...),
 RKIR0smstd = std(hcat((results -> results[:RKIR0smtraj]).(worker_results)...), dims=2)
 nnhc = nn1 - size(RKIR0smmean)[1]
 nne = size(empR0new)[1]
-nne = 180
+nne = empn
 RKIR0smmean = vcat(zeros(nnhc),RKIR0smmean)
 RKIR0smstd = vcat(zeros(nnhc),RKIR0smstd)
 for i=1:7
@@ -247,7 +255,23 @@ pl16b = plot(collect(1:nne),[RKIR0smmean[nzer+1:nzer+nne], RKIR0smmean[nzer+1:nz
 plot!(pl16b, empR0smtraj[nzer+1:nzer+nne], linecolor = [:green], label=false, linewidth = [2])
 savefig(pl16b,"$(filename_prefix)RKIR0smemp_new_2.pdf")
 
+# incidence per 100K
 
+nwork = length(totinfvec[1,:])
+inzmean = []
+inzstd = []
+inzall = zeros(length(totinfvec[:,1]),nwork)
+for i =1:7
+    push!(inzmean,0)
+    push!(inzstd,0)
+end
+for i in 1:length(totinfvec[:,1])-7
+    inzall[i+7,:] = detfrac*(totinfvec[i+7,:].-totinfvec[i,:])
+    push!(inzmean,mean(detfrac*(totinfvec[i+7,:].-totinfvec[i,:])))
+    push!(inzstd,std(detfrac*(totinfvec[i+7,:].-totinfvec[i,:])))
+end
+pl16c = plot(collect(1:length(totinfvec[:,1])),[inzmean, inzmean.-inzstd,inzmean.+inzstd], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black],label = false, xlabel = "days", ylabel = "Inc")
+savefig(pl16c,"$(filename_prefix)incidence.pdf")
 
 shorttimemean = mean(hcat((results -> results[:shorttimetraj]).(worker_results)...), dims=2)
 shorttimestd = std(hcat((results -> results[:shorttimetraj]).(worker_results)...), dims=2)
@@ -258,7 +282,7 @@ savefig(pl26,"$(filename_prefix)shorttime.pdf")
 
 nzerw= (Int(ceil(virustime/datat+2*corlatent/datat))-1)
 nnew = Int(ceil(size(empcasnew)[1]/datat))
-nnew = Int(ceil(180/datat))
+nnew = Int(ceil(empn/datat))
 #nnew = Int(ceil(nne/datat))
 #nzerw = Int(ceil(nzer/datat))
 pl26a = plot(datat*collect(1:nnew),[shorttimemean[nzerw+1:nzerw+nnew], shorttimemean[nzerw+1:nzerw+nnew].-shorttimestd[nzerw+1:nzerw+nnew],shorttimemean[nzerw+1:nzerw+nnew].+shorttimestd[nzerw+1:nzerw+nnew]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label=false, xlabel = "days", ylabel = "short time [%]")
@@ -275,13 +299,26 @@ savefig(pl26a,"$(filename_prefix)shorttimeemp_angezeigte_kurzarbeit.pdf")
 
 
 pl26b = plot(datat*collect(1:nnew),[shorttimemean[nzerw+1:nzerw+nnew], shorttimemean[nzerw+1:nzerw+nnew].-shorttimestd[nzerw+1:nzerw+nnew],shorttimemean[nzerw+1:nzerw+nnew].+shorttimestd[nzerw+1:nzerw+nnew]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label=false, xlabel = "days", ylabel = "short time [%]")
-# tatsächlich ausgezahlte kurzarbeit from april to july
-scatter!(pl26b, [23], [0.078], markersize = 5, markercolor = [:green], label = false)
-scatter!(pl26b, [53], [0.180], markersize = 5, markercolor = [:green], label = false)
-scatter!(pl26b, [83], [0.179], markersize = 5, markercolor = [:green], label = false)
-scatter!(pl26b, [114], [0.140], markersize = 5, markercolor = [:green], label = false)
-scatter!(pl26b, [145], [0.128], markersize = 5, markercolor = [:green], label = false)
-savefig(pl26b,"$(filename_prefix)shorttimeemp_tatsaechliche_kurzarbeit.pdf")
+# tatsächlich ausgezahlte kurzarbeit with workforce 45 mio
+scatter!(pl26b, [23], [0.057333333], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b, [51], [0.132222222], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b, [83], [0.131555556], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b, [114], [0.102888889], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b, [145], [0.094222222], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b, [176], [0.057], markersize = 5, markercolor = [:green], label = false)
+
+savefig(pl26b,"$(filename_prefix)shorttimeemp_2.pdf")
+
+pl26b1 = plot(datat*collect(1:nnew),[shorttimemean[nzerw+1:nzerw+nnew], shorttimemean[nzerw+1:nzerw+nnew].-shorttimestd[nzerw+1:nzerw+nnew],shorttimemean[nzerw+1:nzerw+nnew].+shorttimestd[nzerw+1:nzerw+nnew]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label=false, xlabel = "days", ylabel = "short time [%]")
+# tatsächlich ausgezahlte kurzarbeit from april to july with workforce 33 mio
+scatter!(pl26b1, [23], [0.078], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b1, [53], [0.180], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b1, [83], [0.179], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b1, [114], [0.140], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b1, [145], [0.128], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl26b1, [176], [0.078], markersize = 5, markercolor = [:green], label = false)
+
+savefig(pl26b1,"$(filename_prefix)shorttimeemp_tatsaechliche_kurzarbeit.pdf")
 
 
 pl26c = plot(datat*collect(1:nnew),[shorttimemean[nzerw+1:nzerw+nnew], shorttimemean[nzerw+1:nzerw+nnew].-shorttimestd[nzerw+1:nzerw+nnew],shorttimemean[nzerw+1:nzerw+nnew].+shorttimestd[nzerw+1:nzerw+nnew]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label=false, xlabel = "days", ylabel = "short time [%]")
@@ -307,7 +344,31 @@ scatter!(pl26c, [201], [0.11107683], markersize = 5, markercolor = [:green], lab
 
 savefig(pl26c,"$(filename_prefix)shorttimeemp_ifo_perc.pdf")
 
-pl10a = plot(datat*collect(1:nnew),[gdplossmean[nzerw+1:nzerw+nnew], gdplossmean[nzerw+1:nzerw+nnew].-gdplossstd[nzerw+1:nzerw+nnew],gdplossmean[nzerw+1:nzerw+nnew].+gdplossstd[nzerw+1:nzerw+nnew]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label=false, xlabel = "days", ylabel = "GDP loss [%]")
+pl2a = plot(datat*collect(1:nnew),[unempmean[nzerw+1:nzerw+nnew], unempmean[nzerw+1:nzerw+nnew].-unempstd[nzerw+1:nzerw+nnew],unempmean[nzerw+1:nzerw+nnew].+unempstd[nzerw+1:nzerw+nnew]], linestyle = [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black],label = ["unemp" "" ""])
+# FRED Registered Unemployment Rate
+scatter!(pl2a, [21], [0.05], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl2a, [51], [0.058], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl2a, [83], [0.063], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl2a, [112], [0.064], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl2a, [143], [0.064], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl2a, [171], [0.063], markersize = 5, markercolor = [:green], label = false)
+#scatter!(pl2a, [201], [0.063], markersize = 5, markercolor = [:green], label = false)
+savefig(pl2a,"$(filename_prefix)unempdyn_emp.pdf")
+
+
+
+
+pl10a = plot(datat*collect(1:nnew),[gdplossmean[nzerw+1:nzerw+nnew], gdplossmean[nzerw+1:nzerw+nnew].-gdplossstd[nzerw+1:nzerw+nnew],gdplossmean[nzerw+1:nzerw+nnew].+gdplossstd[nzerw+1:nzerw+nnew]], linestyle= [:solid :dot :dot], linewidth = [2 1 1], linecolor = [:blue :black :black], label=false, xlabel = "days", ylabel = "GDP loss[%]")
+# calculate average GDP loss in quarters
+q1loss = (10*0+sum(gdplossmean[1:3]))/13
+q2loss = sum(gdplossmean[4:16])/13
+q3loss = sum(gdplossmean[17:29])/13
+scatter!(pl10a, [21], [0.018], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl10a, [112], [0.113], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl10a, [201], [0.037], markersize = 5, markercolor = [:green], label = false)
+scatter!(pl10a, [21], [q1loss], markersize = 5, markercolor = [:blue], label = false)
+scatter!(pl10a, [112], [q2loss], markersize = 5, markercolor = [:blue], label = false)
+scatter!(pl10a, [201], [q3loss], markersize = 5, markercolor = [:blue], label = false)
 savefig(pl10a,"$(filename_prefix)gdplossemp.pdf")
 
 pl6b = plot(datat*collect(1:nnew),[infmean[nzerw+1:nzerw+nnew,1], infmean[nzerw+1:nzerw+nnew,1].-infstd[nzerw+1:nzerw+nnew,1],infmean[nzerw+1:nzerw+nnew,1].+infstd[nzerw+1:nzerw+nnew,1],hcapfrac[nzerw+1:nzerw+nnew]], linestyle = [:solid :dot :dot :solid], linewidth = [2 1 1 1], linecolor = [:blue :black :black :black],label = ["y" "" "" "cap"])
